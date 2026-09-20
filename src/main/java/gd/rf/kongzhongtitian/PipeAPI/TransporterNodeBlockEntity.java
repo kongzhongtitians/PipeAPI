@@ -347,6 +347,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 if (!remainder.isEmpty()) {
                     handler.insertItem(slot, remainder, false);
                 }
+                return;
             }
         }
     }
