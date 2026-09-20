@@ -268,6 +268,20 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         return multiplier;
     }
 
+    private boolean getStackMultiplier() {
+        ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
+        if (stack.isEmpty() || !isSpeedUpgrade(stack)) return false;
+
+        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (rl == null) return false;
+        String id = rl.toString();
+
+        if (id=="exura:upgrade_stack"){
+            return true;
+        }
+        return false;
+    }
+
     private double getExtractInterval() {
         return 10.0 * getSpeedMultiplier();
     }
@@ -277,6 +291,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
      */
     private void tryExtractOneToCache() {
         List<ItemStack> filters = getFilterItems();
+        boolean stackUpgrade = getStackMultiplier(); // 是否启用了整组抽取
 
         for (Direction dir : DIRECTION_ORDER) {
             if (!isDirectionEnabled(dir)) continue;
@@ -309,12 +324,31 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                     if (!matches) continue;
                 }
 
-                ItemStack extracted = handler.extractItem(slot, 1, true);
+                int maxExtract = stackUpgrade ? stackInSlot.getMaxStackSize() : 1;
+
+                ItemStack simulatedExtract = handler.extractItem(slot, maxExtract, true);
+                if (simulatedExtract.isEmpty()) continue;
+
+                ItemStack cacheStack = itemHandler.getStackInSlot(SLOT_CACHE);
+                int space;
+                if (cacheStack.isEmpty()) {
+                    space = simulatedExtract.getMaxStackSize();
+                } else if (ItemStack.isSameItemSameTags(cacheStack, simulatedExtract)) {
+                    space = cacheStack.getMaxStackSize() - cacheStack.getCount();
+                } else {
+                    continue;
+                }
+
+                if (space <= 0) continue;
+
+                int extractCount = Math.min(simulatedExtract.getCount(), space);
+
+                ItemStack extracted = handler.extractItem(slot, extractCount, false);
                 if (extracted.isEmpty()) continue;
-                extracted = handler.extractItem(slot, 1, false);
-                if (!extracted.isEmpty()) {
-                    itemHandler.insertItem(SLOT_CACHE, extracted, false);
-                    return;
+
+                ItemStack remainder = itemHandler.insertItem(SLOT_CACHE, extracted, false);
+                if (!remainder.isEmpty()) {
+                    handler.insertItem(slot, remainder, false);
                 }
             }
         }
