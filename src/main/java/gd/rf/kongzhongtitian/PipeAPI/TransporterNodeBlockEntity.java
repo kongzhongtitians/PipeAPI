@@ -276,10 +276,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         if (rl == null) return false;
         String id = rl.toString();
 
-        if (id=="exura:upgrade_stack"){
-            return true;
-        }
-        return false;
+        return "exura:upgrade_stack".equals(id);
     }
 
     private double getExtractInterval() {
