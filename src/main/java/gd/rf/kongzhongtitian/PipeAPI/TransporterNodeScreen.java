@@ -110,7 +110,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
             gui.drawString(this.font, label,
                     leftPos + DIR_X[i] + (16 - w) / 2,
                     topPos + DIR_Y[i] + (16 - w) / 2,
-                    0xFF888888, false);
+                    0xFFFFFFFF, false);
         }
 
         // ---- 绘制完所有内容后，统一绘制 tooltip ----
