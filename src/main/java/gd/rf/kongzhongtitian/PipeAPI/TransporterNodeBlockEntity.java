@@ -132,32 +132,39 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         }
 
         if (currentTarget == null || !level.isLoaded(currentTarget)) {
-            isTransitActive = false;
-            currentTarget = null;
+            switchToNextTarget();
             return;
         }
 
         BlockEntity targetBe = level.getBlockEntity(currentTarget);
         if (targetBe == null) {
-            isTransitActive = false;
-            currentTarget = null;
+            switchToNextTarget();
             return;
         }
 
-        boolean fullyInserted = targetBe.getCapability(ForgeCapabilities.ITEM_HANDLER).map(handler -> {
-            ItemStack leftover = ItemHandlerHelper.insertItem(handler, cacheStack.copy(), false);
-            if (leftover.isEmpty()) {
-                itemHandler.setStackInSlot(SLOT_CACHE, ItemStack.EMPTY);
-                return true;
-            } else {
-                itemHandler.setStackInSlot(SLOT_CACHE, leftover);
-                return false;
-            }
-        }).orElse(false);
+        LazyOptional<IItemHandler> cap = targetBe.getCapability(ForgeCapabilities.ITEM_HANDLER);
+        if (!cap.isPresent()) {
+            switchToNextTarget();
+            return;
+        }
 
-        if (fullyInserted) {
+        IItemHandler handler = cap.orElse(null);
+        if (handler == null) {
+            switchToNextTarget();
+            return;
+        }
+
+        ItemStack leftover = ItemHandlerHelper.insertItem(handler, cacheStack.copy(), false);
+
+        if (leftover.isEmpty()) {
+            // 全部插入成功
+            itemHandler.setStackInSlot(SLOT_CACHE, ItemStack.EMPTY);
             isTransitActive = false;
             currentTarget = null;
+        } else {
+            // 目标满或只能插入一部分，剩余物品放回缓存，然后切换下一个目标
+            itemHandler.setStackInSlot(SLOT_CACHE, leftover);
+            switchToNextTarget();
         }
     }
 
@@ -205,7 +212,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                         queue.add(adjacent);
                         distances.put(adjacent, currentDist + 1);
                     }
-                } else if (level.getBlockEntity(adjacent) != null) {
+                } else if (!adjState.is(DTBlocks.TRANSPORTER_NODE.get()) && !adjState.is(DTBlocks.FLUID_TRANSPORTER_NODE.get()) && level.getBlockEntity(adjacent) != null) {
                     BlockEntity be = level.getBlockEntity(adjacent);
                     if (be != null && !containers.containsKey(adjacent)) {
                         LazyOptional<IItemHandler> cap = be.getCapability(ForgeCapabilities.ITEM_HANDLER, dir.getOpposite());
@@ -373,6 +380,12 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         }
         tag.putDouble("currentRemainingTicks", currentRemainingTicks);
         tag.putDouble("extractCooldown", extractCooldown);
+    }
+
+    private void switchToNextTarget() {
+        isTransitActive = false;
+        currentTarget = null;
+        tryStartTransit();
     }
 
     @Override
