@@ -53,4 +53,16 @@ public class TransporterNode extends Block implements EntityBlock {
         }
         return null;
     }
+
+	@Override
+	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+		if (!state.is(newState.getBlock())) {
+			BlockEntity blockEntity = level.getBlockEntity(pos);
+			if (blockEntity instanceof TransporterNodeBlockEntity node) {
+				node.dropContents(level, pos);
+			}
+			level.updateNeighbourForOutputSignal(pos, this);
+			super.onRemove(state, level, pos, newState, isMoving);
+		}
+	}
 }

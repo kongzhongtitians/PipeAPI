@@ -1,7 +1,7 @@
 {
 	"render_type": "cutout",
 	"textures": {
-		"particle": "#3",
+		"particle": "minecraft:block/hopper_inside",
 		"1": "block/beacon",
 		"2": "pipe_api:block/hopperin",
 		"3": "pipe_api:block/hopperout"
@@ -32,24 +32,24 @@
 			}
 		},
 		{
-			"from": [0, 13, 0],
-			"to": [16, 3, 16],
+			"from": [0, 13.1, 0],
+			"to": [16, 2.9, 16],
 			"faces": {
 				"up": {"uv": [0, 0, 16, 16], "texture": "#2"},
 				"down": {"uv": [0, 0, 16, 16], "texture": "#2"}
 			}
 		},
 		{
-			"from": [13, 0, 0],
-			"to": [3, 16, 16],
+			"from": [13.1, 0, 0],
+			"to": [2.9, 16, 16],
 			"faces": {
 				"east": {"uv": [0, 0, 16, 16], "texture": "#2"},
 				"west": {"uv": [0, 0, 16, 16], "texture": "#2"}
 			}
 		},
 		{
-			"from": [0, 0, 13],
-			"to": [16, 16, 3],
+			"from": [0, 0, 13.1],
+			"to": [16, 16, 2.9],
 			"faces": {
 				"north": {"uv": [0, 0, 16, 16], "texture": "#2"},
 				"south": {"uv": [0, 0, 16, 16], "texture": "#2"}
@@ -72,7 +72,7 @@
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"firstperson_lefthand": {
-			"rotation": [0, -135, 0],
+			"rotation": [0, -13.195, 0],
 			"scale": [0.4, 0.4, 0.4]
 		},
 		"ground": {
@@ -80,7 +80,7 @@
 			"scale": [0.25, 0.25, 0.25]
 		},
 		"gui": {
-			"rotation": [30, -135, 0],
+			"rotation": [30, -45, 0],
 			"scale": [0.625, 0.625, 0.625]
 		},
 		"fixed": {

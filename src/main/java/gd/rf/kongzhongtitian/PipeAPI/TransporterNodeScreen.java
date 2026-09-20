@@ -34,7 +34,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
     private static final int SPEED_Y    = TransporterNodeMenu.SPEED_Y;
     private static final int RESERVED_X = TransporterNodeMenu.RESERVED_X;
     private static final int RESERVED_Y = TransporterNodeMenu.RESERVED_Y;
-    private static final int DIR_Y      = TransporterNodeMenu.DIR_Y;
+    private static final int[] DIR_Y      = TransporterNodeMenu.DIR_Y;
     private static final int YPLUS      = 15;
     private static final int[] DIR_X    = TransporterNodeMenu.DIR_X;
 
@@ -86,9 +86,9 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
             ItemStack torch = this.menu.getSlot(
                     TransporterNodeBlockEntity.SLOT_DIR_START + i).getItem();
             if (!torch.isEmpty()) {
-                drawSlotFrame(gui, x, DIR_Y, 0x40FF0000, 0xFFFF0000);
+                drawSlotFrame(gui, x, DIR_Y[i], 0x40FF0000, 0xFFFF0000);
             } else {
-                gui.renderOutline(leftPos + x, topPos + DIR_Y, 16, 16, 0x80FF0000);
+                gui.renderOutline(leftPos + x, topPos + DIR_Y[i], 16, 16, 0x80FF0000);
             }
         }
     }
@@ -109,7 +109,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
             int w = this.font.width(label);
             gui.drawString(this.font, label,
                     leftPos + DIR_X[i] + (16 - w) / 2,
-                    topPos + DIR_Y + 18,
+                    topPos + DIR_Y[i] + (16 - w) / 2,
                     0xFF888888, false);
         }
 
@@ -120,7 +120,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
     private int getHoveredDirectionSlot(int mouseX, int mouseY) {
         for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {
             int x = leftPos + DIR_X[i];
-            int y = topPos + DIR_Y;
+            int y = topPos + DIR_Y[i];
             if (mouseX >= x && mouseX < x + 16 && mouseY >= y && mouseY < y + 16) {
                 return i;
             }

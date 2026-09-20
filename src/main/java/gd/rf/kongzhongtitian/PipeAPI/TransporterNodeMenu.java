@@ -18,8 +18,10 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     public static final int FILTER_X = 44, FILTER_Y = 50;
     public static final int SPEED_X = 80,  SPEED_Y = 50;
     public static final int RESERVED_X = 116, RESERVED_Y = 50;
-    public static final int DIR_Y = 96;
-    public static final int[] DIR_X = {26, 44, 62, 80, 98, 116};
+    //public static final int DIR_Y = 96;
+    //public static final int[] DIR_X = {26, 44, 62, 80, 98, 116};
+    public static final int[] DIR_Y = {20, 38, 20, 2, 20, 38};
+	public static final int[] DIR_X = {152, 134, 116, 134, 134, 152};
 
     // 玩家背包起始 Y
     public static final int INV_Y = 128;
@@ -44,9 +46,13 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
         this.addSlot(new LockedSlot(nodeInventory,
                 TransporterNodeBlockEntity.SLOT_RESERVED, RESERVED_X, RESERVED_Y));
         // 方向槽：E S W N U D
+        //for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {
+        //    this.addSlot(new RedstoneTorchSlot(nodeInventory,
+        //            TransporterNodeBlockEntity.SLOT_DIR_START + i, DIR_X[i], DIR_Y));
+        //}
         for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {
             this.addSlot(new RedstoneTorchSlot(nodeInventory,
-                    TransporterNodeBlockEntity.SLOT_DIR_START + i, DIR_X[i], DIR_Y));
+                    TransporterNodeBlockEntity.SLOT_DIR_START + i, DIR_X[i], DIR_Y[i]));
         }
 
         // 玩家背包 3 行

@@ -11,6 +11,7 @@ import net.minecraftforge.common.extensions.IForgeMenuType;
 import net.minecraftforge.items.IItemHandler;
 import net.minecraftforge.registries.DeferredRegister;
 import net.minecraftforge.registries.RegistryObject;
+import net.minecraftforge.items.ItemStackHandler;
 
 import static net.minecraftforge.registries.ForgeRegistries.MENU_TYPES;
 
@@ -18,23 +19,38 @@ import static net.minecraftforge.registries.ForgeRegistries.MENU_TYPES;
 public class DTMenu {
     public static final DeferredRegister<MenuType<?>> MENUS =
             DeferredRegister.create(MENU_TYPES, PipeAPI.MODID);
+	
+	public static final RegistryObject<MenuType<TransporterNodeMenu>> TRANSPORTER_NODE_MENU =
+        MENUS.register("transporter_node_menu", () -> IForgeMenuType.create((windowId, playerInv, extraData) -> {
+            BlockPos pos = extraData.readBlockPos();
+            ContainerLevelAccess access = ContainerLevelAccess.create(playerInv.player.level(), pos);
 
-    public static final RegistryObject<MenuType<TransporterNodeMenu>> TRANSPORTER_NODE_MENU =
-            MENUS.register("transporter_node_menu", () -> IForgeMenuType.create((windowId, playerInv, extraData) -> {
-                // 从同步数据包中读取方块坐标
-                BlockPos pos = extraData.readBlockPos();
-                // 创建 ContainerLevelAccess
-                ContainerLevelAccess access = ContainerLevelAccess.create(playerInv.player.level(), pos);
+            BlockEntity blockEntity = playerInv.player.level().getBlockEntity(pos);
+            IItemHandler itemHandler;
+            if (blockEntity instanceof TransporterNodeBlockEntity node) {
+                itemHandler = node.getItemHandler();   // ← 完整 10 槽的 ItemStackHandler
+            } else {
+                // 兜底：避免 null 引发 NPE
+                itemHandler = new ItemStackHandler(TransporterNodeBlockEntity.INVENTORY_SIZE);
+            }
+            return new TransporterNodeMenu(windowId, playerInv, itemHandler, access);
+        }));
+    //public static final RegistryObject<MenuType<TransporterNodeMenu>> TRANSPORTER_NODE_MENU =
+    //        MENUS.register("transporter_node_menu", () -> IForgeMenuType.create((windowId, playerInv, extraData) -> {
+    //            // 从同步数据包中读取方块坐标
+    //            BlockPos pos = extraData.readBlockPos();
+    //            // 创建 ContainerLevelAccess
+    //            ContainerLevelAccess access = ContainerLevelAccess.create(playerInv.player.level(), pos);
 
-                // 从目标方块实体中获取 IItemHandler 能力
-                BlockEntity blockEntity = playerInv.player.level().getBlockEntity(pos);
-                IItemHandler itemHandler = blockEntity != null
-                        ? blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
-                        .orElseThrow(() -> new IllegalStateException("Expected item handler capability"))
-                        : null;  // 安全起见可以进一步处理 null 情况
+    //            // 从目标方块实体中获取 IItemHandler 能力
+    //            BlockEntity blockEntity = playerInv.player.level().getBlockEntity(pos);
+    //            IItemHandler itemHandler = blockEntity != null
+    //                    ? blockEntity.getCapability(ForgeCapabilities.ITEM_HANDLER)
+    //                    .orElseThrow(() -> new IllegalStateException("Expected item handler capability"))
+    //                    : null;  // 安全起见可以进一步处理 null 情况
 
-                return new TransporterNodeMenu(windowId, playerInv, itemHandler, access);
-            }));
+    //            return new TransporterNodeMenu(windowId, playerInv, itemHandler, access);
+    //        }));
 
     public static final RegistryObject<MenuType<FilterMenu>> FILTER_MENU =
             MENUS.register("filter_menu", () -> IForgeMenuType.create((windowId, inv, data) -> {
