@@ -277,7 +277,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
     }
 
     private boolean getStackMultiplier() {
-        ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
+        ItemStack stack = itemHandler.getStackInSlot(SLOT_RESERVED);
         if (stack.isEmpty() || !isStackUpgrade(stack)) return false;
 
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
