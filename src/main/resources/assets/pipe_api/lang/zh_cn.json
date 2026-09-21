@@ -25,5 +25,5 @@
   "gui.pipe_api.c": "缓存槽",
   "gui.pipe_api.f": "过滤槽",
   "gui.pipe_api.s": "速度升级",
-  "gui.pipe_api.r": "已禁用"
+  "gui.pipe_api.r": "堆叠升级"
 }

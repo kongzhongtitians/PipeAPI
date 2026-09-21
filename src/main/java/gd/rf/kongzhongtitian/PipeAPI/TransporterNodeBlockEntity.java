@@ -244,6 +244,14 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 || "exura:upgrade_speed_super".equals(id);
     }
 
+    public static boolean isStackUpgrade(ItemStack stack) {
+        if (stack.isEmpty()) return false;
+        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (rl == null) return false;
+        String id = rl.toString();
+        return "exura:upgrade_stack".equals(id);
+    }
+
     private double getSpeedMultiplier() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
         if (stack.isEmpty() || !isSpeedUpgrade(stack)) return 1.0;
@@ -270,7 +278,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
     private boolean getStackMultiplier() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
-        if (stack.isEmpty() || !isSpeedUpgrade(stack)) return false;
+        if (stack.isEmpty() || !isStackUpgrade(stack)) return false;
 
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return false;
@@ -283,9 +291,6 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         return 10.0 * getSpeedMultiplier();
     }
 
-    /**
-     * 只从"已放入红石火把的方向"抽取物品到缓存槽。
-     */
     private void tryExtractOneToCache() {
         List<ItemStack> filters = getFilterItems();
         boolean stackUpgrade = getStackMultiplier(); // 是否启用了整组抽取

@@ -34,6 +34,10 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
     private static final int SPEED_Y    = TransporterNodeMenu.SPEED_Y;
     private static final int RESERVED_X = TransporterNodeMenu.RESERVED_X;
     private static final int RESERVED_Y = TransporterNodeMenu.RESERVED_Y;
+    private static final int C_GREEN = 0x4000FF00;
+    private static final int C_BLUE = 0x4022AAFF;
+    private static final int C_OR = 0x40FFAA00;
+    private static final int C_CYAN = 0x40AAFFFF;
     private static final int[] DIR_Y      = TransporterNodeMenu.DIR_Y;
     private static final int YPLUS      = 15;
     private static final int[] DIR_X    = TransporterNodeMenu.DIR_X;
@@ -69,16 +73,16 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
         gui.blit(TEXTURE, leftPos, topPos, 0, 0, imageWidth, imageHeight);
 
         // ---- 缓存槽：绿色 ----
-        drawSlotFrame(gui, CACHE_X, CACHE_Y, 0x4000FF00, 0xFF00FF00);
+        drawSlotFrame(gui, CACHE_X, CACHE_Y, C_GREEN, 0xFF00FF00);
 
         // ---- 过滤器槽：橙色 ----
-        drawSlotFrame(gui, FILTER_X, FILTER_Y, 0x40FFAA00, 0xFFFFAA00);
+        drawSlotFrame(gui, FILTER_X, FILTER_Y, C_OR, 0xFFFFAA00);
 
         // ---- 速度升级槽：蓝色 ----
-        drawSlotFrame(gui, SPEED_X, SPEED_Y, 0x4022AAFF, 0xFF22AAFF);
+        drawSlotFrame(gui, SPEED_X, SPEED_Y, C_BLUE, 0xFF22AAFF);
 
         // ---- 预留槽（禁用）：灰色 ----
-        drawSlotFrame(gui, RESERVED_X, RESERVED_Y, 0x80808080, 0xFF808080);
+        drawSlotFrame(gui, RESERVED_X, RESERVED_Y, C_CYAN, 0xFFAAFFFF);
 
         // ---- 方向槽：红色（有火把=实心高亮，无火把=仅描边）----
         for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {

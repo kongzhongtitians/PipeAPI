@@ -25,5 +25,5 @@
   "gui.pipe_api.c": "Cache",
   "gui.pipe_api.f": "Filter",
   "gui.pipe_api.s": "Speed Upgrade",
-  "gui.pipe_api.r": "Disabled"
+  "gui.pipe_api.r": "Stack Upgrade"
 }

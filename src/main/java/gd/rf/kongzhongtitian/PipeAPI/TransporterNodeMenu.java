@@ -114,8 +114,11 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
         public LockedSlot(IItemHandler handler, int index, int x, int y) {
             super(handler, index, x, y);
         }
-        @Override public boolean mayPlace(ItemStack stack) { return false; }
-        @Override public boolean mayPickup(Player player) { return false; }
+        @Override public boolean mayPlace(ItemStack stack) { return TransporterNodeBlockEntity.isStackUpgrade(stack); }
+        @Override
+        public int getMaxStackSize() {
+            return 1;
+        }
     }
 
     @Override
