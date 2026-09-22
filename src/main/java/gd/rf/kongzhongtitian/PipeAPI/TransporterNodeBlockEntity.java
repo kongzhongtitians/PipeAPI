@@ -241,7 +241,8 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         String id = rl.toString();
         return "exura:upgrade_speed".equals(id)
                 || "exura:upgrade_speed_enchanted".equals(id)
-                || "exura:upgrade_speed_super".equals(id);
+                || "exura:upgrade_speed_super".equals(id)
+                || "ducktech:speed_upgrade".equals(id);
     }
 
     public static boolean isStackUpgrade(ItemStack stack) {
@@ -249,7 +250,8 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return false;
         String id = rl.toString();
-        return "exura:upgrade_stack".equals(id);
+        return "exura:upgrade_stack".equals(id)
+                || "ducktech:stack_upgrade".equals(id);
     }
 
     private double getSpeedMultiplier() {
@@ -259,6 +261,46 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return 1.0;
         String id = rl.toString();
+        int count = stack.getCount();
+
+        if("ducktech:speed_upgrade".equals(id)){
+            double plier = 1.0;
+            switch (count){
+                case 1:plier=0.9;break;
+                case 2:plier=0.825;break;
+                case 3:plier=0.75;break;
+                case 4:plier=0.7;break;
+                case 5:plier=0.66;break;
+                case 6:plier=0.62;break;
+                case 7:plier=0.59;break;
+                case 8:plier=0.56;break;
+                case 9:plier=0.53;break;
+                case 10:plier=0.5;break;
+                case 11:plier=0.48;break;
+                case 12:plier=0.46;break;
+                case 13:plier=0.44;break;
+                case 14:plier=0.42;break;
+                case 15:plier=0.4;break;
+                case 16:plier=0.39;break;
+                case 17:plier=0.38;break;
+                case 18:plier=0.37;break;
+                case 19:plier=0.36;break;
+                case 20:plier=0.35;break;
+                case 21:plier=0.345;break;
+                case 22:plier=0.34;break;
+                case 23:plier=0.335;break;
+                case 24:plier=0.33;break;
+                case 25:plier=0.325;break;
+                case 26:plier=0.32;break;
+                case 27:plier=0.315;break;
+                case 28:plier=0.31;break;
+                case 29:plier=0.305;break;
+                case 30:plier=0.3;break;
+                case 31:plier=0.2975;break;
+                case 32:plier=0.295;break;
+            }
+            return plier;
+        }
 
         double perItem;
         switch (id) {
@@ -269,7 +311,6 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         }
 
         double multiplier = 1.0;
-        int count = stack.getCount();
         for (int i = 0; i < count; i++) {
             multiplier *= perItem;
         }
@@ -284,7 +325,8 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         if (rl == null) return false;
         String id = rl.toString();
 
-        return "exura:upgrade_stack".equals(id);
+        return "exura:upgrade_stack".equals(id)
+                || "ducktech:stack_upgrade".equals(id);
     }
 
     private double getExtractInterval() {
