@@ -265,6 +265,9 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
         if("ducktech:speed_upgrade".equals(id)){
             double plier = 1.0;
+			if(count>=32){
+				return 0.295;
+			}
             switch (count){
                 case 1:plier=0.9;break;
                 case 2:plier=0.825;break;
@@ -298,6 +301,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 case 30:plier=0.3;break;
                 case 31:plier=0.2975;break;
                 case 32:plier=0.295;break;
+				default: return 1.0;
             }
             return plier;
         }
@@ -317,16 +321,17 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         return multiplier;
     }
 
-    private boolean getStackMultiplier() {
+    private int getStackMultiplier() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_RESERVED);
-        if (stack.isEmpty() || !isStackUpgrade(stack)) return false;
+        if (stack.isEmpty() || !isStackUpgrade(stack)) return 0;
 
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (rl == null) return false;
+        if (rl == null) return 0;
         String id = rl.toString();
+		if("exura:upgrade_stack".equals(id) return 1;
+		if("ducktech:stack_upgrade".equals(id)) return 2;
 
-        return "exura:upgrade_stack".equals(id)
-                || "ducktech:stack_upgrade".equals(id);
+        return 0;
     }
 
     private double getExtractInterval() {
@@ -335,7 +340,10 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
     private void tryExtractOneToCache() {
         List<ItemStack> filters = getFilterItems();
-        boolean stackUpgrade = getStackMultiplier(); // 是否启用了整组抽取
+		boolean stackUpgrade = false;
+		if(getStackMultiplier()==1||getStackMultiplier()==2){
+			stackUpgrade = true;
+		}
 
         for (Direction dir : DIRECTION_ORDER) {
             if (!isDirectionEnabled(dir)) continue;
