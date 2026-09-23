@@ -328,7 +328,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return 0;
         String id = rl.toString();
-		if("exura:upgrade_stack".equals(id) return 1;
+		if("exura:upgrade_stack".equals(id)) return 1;
 		if("ducktech:stack_upgrade".equals(id)) return 2;
 
         return 0;
