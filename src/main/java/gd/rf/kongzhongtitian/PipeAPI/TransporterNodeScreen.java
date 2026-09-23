@@ -20,8 +20,7 @@ import static java.lang.Boolean.FALSE;
 import static java.lang.Boolean.TRUE;
 
 public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNodeMenu> {
-    private static final ResourceLocation TEXTURE =
-            new ResourceLocation(PipeAPI.MODID, "textures/screen/xiang.png");
+    private static final ResourceLocation TEXTURE = ResourceLocation.fromNamespaceAndPath(PipeAPI.MODID, "textures/screen/xiang.png");
 
     private static final MutableComponent[] DIRECTION_SHORT = {Component.translatable("gui.pipe_api.east_short"), Component.translatable("gui.pipe_api.south_short"), Component.translatable("gui.pipe_api.west_short"), Component.translatable("gui.pipe_api.north_short"), Component.translatable("gui.pipe_api.up_short"),Component.translatable("gui.pipe_api.down_short")};
 
@@ -116,6 +115,9 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
                     topPos + DIR_Y[i] + (16 - w) / 2,
                     0xFFFFFFFF, false);
         }
+        double speed = menu.getSpeedMultiplier();
+        String text = String.format("Speed: %.2f", speed);
+        gui.drawString(this.font,text,leftPos+FILTER_X-40,topPos+FILTER_Y+60,0xFF888888,false);
 
         // ---- 绘制完所有内容后，统一绘制 tooltip ----
         this.renderTooltip(gui, mouseX, mouseY);

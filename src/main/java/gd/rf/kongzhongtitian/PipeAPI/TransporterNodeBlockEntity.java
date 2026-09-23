@@ -254,7 +254,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 || "ducktech:stack_upgrade".equals(id);
     }
 
-    private double getSpeedMultiplier() {
+    public double getSpeedMultiplier() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
         if (stack.isEmpty() || !isSpeedUpgrade(stack)) return 1.0;
 
@@ -265,8 +265,9 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
         if("ducktech:speed_upgrade".equals(id)){
             double plier = 1.0;
-			if(count>=32){
-				return 0.295;
+			if(count>30){
+                plier=0.3-(count*0.025);
+				return plier;
 			}
             switch (count){
                 case 1:plier=0.9;break;
@@ -299,8 +300,6 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 case 28:plier=0.31;break;
                 case 29:plier=0.305;break;
                 case 30:plier=0.3;break;
-                case 31:plier=0.2975;break;
-                case 32:plier=0.295;break;
 				default: return 1.0;
             }
             return plier;
@@ -494,8 +493,8 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
     @Nullable
     @Override
-	public AbstractContainerMenu createMenu(int id, Inventory inv, Player player) {
-		return new TransporterNodeMenu(id, inv, this.itemHandler,
-				ContainerLevelAccess.create(level, worldPosition));
-	}
+    public AbstractContainerMenu createMenu(int windowId, Inventory playerInv, Player player) {
+        return new TransporterNodeMenu(windowId, playerInv, this, this.getItemHandler(),
+                ContainerLevelAccess.create(level, worldPosition));
+    }
 }

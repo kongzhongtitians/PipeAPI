@@ -12,6 +12,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class TransporterNodeMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
+    private static TransporterNodeBlockEntity blockEntity;
 
     // ===== 槽位坐标（供 Menu 与 Screen 共用，避免不一致）=====
     public static final int CACHE_X = 80,  CACHE_Y = 20;
@@ -28,9 +29,11 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     public static final int HOTBAR_Y = 186;
 
     public TransporterNodeMenu(int windowId, Inventory playerInv,
+                               TransporterNodeBlockEntity blockEntity,
                                IItemHandler nodeInventory,
                                ContainerLevelAccess access) {
         super(DTMenu.TRANSPORTER_NODE_MENU.get(), windowId);
+        this.blockEntity = blockEntity;
         this.access = access;
 
         // 缓存槽
@@ -174,6 +177,15 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
         }
         return itemstack;
     }
+
+    public TransporterNodeBlockEntity getBlockEntity() {
+        return blockEntity;
+    }
+
+    public double getSpeedMultiplier() {
+        return blockEntity != null ? blockEntity.getSpeedMultiplier() : 1.0;
+    }
+
 
     @Override
     public boolean stillValid(Player player) {
