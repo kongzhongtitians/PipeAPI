@@ -20,7 +20,6 @@ public class PipeAPI {
         IEventBus modEventBus = FMLJavaModLoadingContext.get().getModEventBus();
         FMLJavaModLoadingContext.get().getModEventBus().addListener(this::onConstructMod);
 
-        DTCreativeTab.CREATIVE_TABS.register(modEventBus);
         DTBlocks.BLOCKS.register(modEventBus);
         DTItems.ITEMS.register(modEventBus);
         DTBlockEntity.BLOCK_ENTITY_TYPES.register(modEventBus);
