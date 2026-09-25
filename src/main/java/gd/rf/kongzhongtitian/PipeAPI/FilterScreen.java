@@ -9,7 +9,7 @@ import net.minecraft.world.entity.player.Inventory;
 
 public class FilterScreen extends AbstractContainerScreen<FilterMenu> {
     private static final ResourceLocation TEXTURE =
-            new ResourceLocation("minecraft", "textures/gui/container/dispenser.png");
+            ResourceLocation.fromNamespaceAndPath("minecraft", "textures/gui/container/dispenser.png");
 
     public FilterScreen(FilterMenu menu, Inventory inv, Component title) {
         super(menu, inv, title);

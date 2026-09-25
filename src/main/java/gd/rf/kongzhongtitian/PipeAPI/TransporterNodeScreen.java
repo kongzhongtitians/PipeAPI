@@ -37,6 +37,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
     private static final int C_BLUE = 0x4022AAFF;
     private static final int C_OR = 0x40FFAA00;
     private static final int C_CYAN = 0x40AAFFFF;
+    private static final int C_RED = 0x40FF0000;
     private static final int[] DIR_Y      = TransporterNodeMenu.DIR_Y;
     private static final int YPLUS      = 15;
     private static final int[] DIR_X    = TransporterNodeMenu.DIR_X;
@@ -89,7 +90,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
             ItemStack torch = this.menu.getSlot(
                     TransporterNodeBlockEntity.SLOT_DIR_START + i).getItem();
             if (!torch.isEmpty()) {
-                drawSlotFrame(gui, x, DIR_Y[i], 0x40FF0000, 0xFFFF0000);
+                drawSlotFrame(gui, x, DIR_Y[i], C_RED, 0xFFFF0000);
             } else {
                 gui.renderOutline(leftPos + x, topPos + DIR_Y[i], 16, 16, 0x80FF0000);
             }
@@ -116,7 +117,7 @@ public class TransporterNodeScreen extends AbstractContainerScreen<TransporterNo
                     0xFFFFFFFF, false);
         }
         double speed = menu.getSpeedMultiplier();
-        String text = String.format("Speed: %.2f", speed);
+        String text = String.format("Speed: %.4f", speed)+'x';
         gui.drawString(this.font,text,leftPos+FILTER_X-40,topPos+FILTER_Y+60,0xFF888888,false);
 
         // ---- 绘制完所有内容后，统一绘制 tooltip ----
