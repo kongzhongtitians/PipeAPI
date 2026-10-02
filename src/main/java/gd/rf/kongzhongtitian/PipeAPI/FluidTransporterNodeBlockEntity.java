@@ -169,25 +169,20 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
         }
 
         if (currentTarget == null || !level.isLoaded(currentTarget)) {
-            isTransitActive = false;
-            currentTarget = null;
-            currentTargetFace = null;
+            // 修复 F：目标失效时轮换下一目标，而非直接停止（与物品节点 switchToNextTarget 对齐）
+            switchToNextTarget();
             return;
         }
 
         BlockEntity targetBe = level.getBlockEntity(currentTarget);
         if (targetBe == null) {
-            isTransitActive = false;
-            currentTarget = null;
-            currentTargetFace = null;
+            switchToNextTarget();
             return;
         }
 
         IFluidHandler targetHandler = findFillableHandler(targetBe, currentTargetFace);
         if (targetHandler == null) {
-            isTransitActive = false;
-            currentTarget = null;
-            currentTargetFace = null;
+            switchToNextTarget();
             return;
         }
 
@@ -410,6 +405,14 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
         isTransitActive = true;
         currentTarget = target;
         currentTargetFace = targetFaces.get(target);
+    }
+
+    /** 修复 F：当前目标失效时重置并立即尝试下一目标（与物品节点 switchToNextTarget 对齐） */
+    private void switchToNextTarget() {
+        isTransitActive = false;
+        currentTarget = null;
+        currentTargetFace = null;
+        tryStartTransit();
     }
 
     /* ==================== 掉落 ==================== */
