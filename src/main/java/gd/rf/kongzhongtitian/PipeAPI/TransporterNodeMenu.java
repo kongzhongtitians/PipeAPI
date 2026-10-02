@@ -22,7 +22,7 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     //public static final int DIR_Y = 96;
     //public static final int[] DIR_X = {26, 44, 62, 80, 98, 116};
     public static final int[] DIR_Y = {20, 38, 20, 2, 20, 38};
-	public static final int[] DIR_X = {152, 134, 116, 134, 134, 152};
+    public static final int[] DIR_X = {152, 134, 116, 134, 134, 152};
 
     // 玩家背包起始 Y
     public static final int INV_Y = 128;
@@ -43,16 +43,12 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
         this.addSlot(new UpgradeSlot(nodeInventory,
                 TransporterNodeBlockEntity.SLOT_FILTER, FILTER_X, FILTER_Y));
         // 速度升级槽
-        this.addSlot(new SpeedUpgradeSlot(nodeInventory,
+        this.addSlot(new SpeedUpgradeSlot(this, nodeInventory,
                 TransporterNodeBlockEntity.SLOT_SPEED, SPEED_X, SPEED_Y));
         // 预留槽（禁用）
-        this.addSlot(new LockedSlot(nodeInventory,
+        this.addSlot(new LockedSlot(this, nodeInventory,
                 TransporterNodeBlockEntity.SLOT_RESERVED, RESERVED_X, RESERVED_Y));
         // 方向槽：E S W N U D
-        //for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {
-        //    this.addSlot(new RedstoneTorchSlot(nodeInventory,
-        //            TransporterNodeBlockEntity.SLOT_DIR_START + i, DIR_X[i], DIR_Y));
-        //}
         for (int i = 0; i < TransporterNodeBlockEntity.DIR_SLOT_COUNT; i++) {
             this.addSlot(new RedstoneTorchSlot(nodeInventory,
                     TransporterNodeBlockEntity.SLOT_DIR_START + i, DIR_X[i], DIR_Y[i]));
@@ -90,12 +86,14 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     }
 
     private static class SpeedUpgradeSlot extends SlotItemHandler {
-        public SpeedUpgradeSlot(IItemHandler handler, int index, int x, int y) {
+        private final TransporterNodeMenu menu;
+        public SpeedUpgradeSlot(TransporterNodeMenu menu, IItemHandler handler, int index, int x, int y) {
             super(handler, index, x, y);
+            this.menu = menu;
         }
         @Override
         public boolean mayPlace(ItemStack stack) {
-            return TransporterNodeBlockEntity.isSpeedUpgrade(stack);
+            return TransporterNodeBlockEntity.isSpeedUpgrade(stack) && menu.canPlaceUpgrade(stack);
         }
     }
 
@@ -114,14 +112,23 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     }
 
     private static class LockedSlot extends SlotItemHandler {
-        public LockedSlot(IItemHandler handler, int index, int x, int y) {
+        private final TransporterNodeMenu menu;
+        public LockedSlot(TransporterNodeMenu menu, IItemHandler handler, int index, int x, int y) {
             super(handler, index, x, y);
+            this.menu = menu;
         }
-        @Override public boolean mayPlace(ItemStack stack) { return TransporterNodeBlockEntity.isStackUpgrade(stack); }
+        @Override public boolean mayPlace(ItemStack stack) {
+            return TransporterNodeBlockEntity.isStackUpgrade(stack) && menu.canPlaceUpgrade(stack);
+        }
         @Override
         public int getMaxStackSize() {
             return 1;
         }
+    }
+
+    /** 升级与节点内已有升级必须同属一个模组（互斥） */
+    public boolean canPlaceUpgrade(ItemStack stack) {
+        return blockEntity != null && blockEntity.canPlaceUpgrade(stack);
     }
 
     @Override
@@ -143,6 +150,11 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
                     moved = this.moveItemStackTo(stackInSlot,
                             TransporterNodeBlockEntity.SLOT_SPEED,
                             TransporterNodeBlockEntity.SLOT_SPEED + 1, false);
+                } else if (TransporterNodeBlockEntity.isStackUpgrade(stackInSlot)) {
+                    // #4 修复：堆叠升级此前漏了分支，Shift 点击会误入缓存槽
+                    moved = this.moveItemStackTo(stackInSlot,
+                            TransporterNodeBlockEntity.SLOT_RESERVED,
+                            TransporterNodeBlockEntity.SLOT_RESERVED + 1, false);
                 } else if (stackInSlot.getItem() instanceof NodeUpgradeItemFilter) {
                     moved = this.moveItemStackTo(stackInSlot,
                             TransporterNodeBlockEntity.SLOT_FILTER,
@@ -185,7 +197,6 @@ public class TransporterNodeMenu extends AbstractContainerMenu {
     public double getSpeedMultiplier() {
         return blockEntity != null ? blockEntity.getSpeedMultiplier() : 1.0;
     }
-
 
     @Override
     public boolean stillValid(Player player) {

@@ -46,15 +46,14 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
     public static final int SLOT_RESERVED = 3;
     public static final int SLOT_DIR_START = 4;
     public static final int DIR_SLOT_COUNT = 6;
-    private static byte MOD_SPEED=0;
-    private static byte MOD_STACK=0;
+    // 升级模组互斥状态为实例级：0=未锁定，1=ducktech，2=exura（原 static 实现跨节点串扰，已移除）
 
     // 方向顺序：东、南、西、北、上、下
     public static final Direction[] DIRECTION_ORDER = {
             Direction.EAST, Direction.SOUTH, Direction.WEST,
             Direction.NORTH, Direction.UP, Direction.DOWN
     };
-	
+
     private final ItemStackHandler itemHandler = new ItemStackHandler(INVENTORY_SIZE) {
         @Override
         protected void onContentsChanged(int slot) {
@@ -62,11 +61,11 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
             syncToClient();
         }
     };
-    
-	public IItemHandler getItemHandler() {
-		return itemHandler;
-	}
-	
+
+    public IItemHandler getItemHandler() {
+        return itemHandler;
+    }
+
     private LazyOptional<IItemHandler> lazyHandler = LazyOptional.empty();
 
     private double extractCooldown = 10.0;
@@ -245,18 +244,10 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return false;
         String id = rl.toString();
-        if (MOD_STACK==1){
-            return "ducktech:speed_upgrade".equals(id);
-        }else if (MOD_STACK==2){
-            return "exura:upgrade_speed".equals(id)
-                    || "exura:upgrade_speed_enchanted".equals(id)
-                    || "exura:upgrade_speed_super".equals(id);
-        }else {
-            return "exura:upgrade_speed".equals(id)
-                    || "exura:upgrade_speed_enchanted".equals(id)
-                    || "exura:upgrade_speed_super".equals(id)
-                    || "ducktech:speed_upgrade".equals(id);
-        }
+        return "ducktech:speed_upgrade".equals(id)
+                || "exura:upgrade_speed".equals(id)
+                || "exura:upgrade_speed_enchanted".equals(id)
+                || "exura:upgrade_speed_super".equals(id);
     }
 
     public static boolean isStackUpgrade(ItemStack stack) {
@@ -264,19 +255,39 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
         if (rl == null) return false;
         String id = rl.toString();
-        if (MOD_SPEED==1){
-            return "ducktech:stack_upgrade".equals(id);
-        }else if (MOD_SPEED==2){
-            return "exura:upgrade_stack".equals(id);
-        }else {
-            return "exura:upgrade_stack".equals(id)
-                    || "ducktech:stack_upgrade".equals(id);
-        }
+        return "ducktech:stack_upgrade".equals(id)
+                || "exura:upgrade_stack".equals(id);
+    }
+
+    /** 升级所属模组：0=非升级/未知，1=ducktech，2=exura */
+    public static int upgradeModOf(ItemStack stack) {
+        if (stack.isEmpty()) return 0;
+        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
+        if (rl == null) return 0;
+        String ns = rl.getNamespace();
+        if ("ducktech".equals(ns)) return 1;
+        if ("exura".equals(ns)) return 2;
+        return 0;
+    }
+
+    /** 该升级是否允许放入节点：与节点内已有升级必须同属一个模组（互斥） */
+    public boolean canPlaceUpgrade(ItemStack stack) {
+        if (stack.isEmpty()) return true;
+        int mod = upgradeModOf(stack);
+        if (mod == 0) return false;
+        int current = currentUpgradeMod();
+        return current == 0 || current == mod;
+    }
+
+    /** 当前节点升级锁定的模组：0=未锁定（两槽均无升级或均为空） */
+    private int currentUpgradeMod() {
+        int mod = upgradeModOf(itemHandler.getStackInSlot(SLOT_SPEED));
+        if (mod != 0) return mod;
+        return upgradeModOf(itemHandler.getStackInSlot(SLOT_RESERVED));
     }
 
     public double getSpeedMultiplier() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_SPEED);
-        if (stack.isEmpty()) MOD_SPEED=0;
         if (stack.isEmpty() || !isSpeedUpgrade(stack)) return 1.0;
 
         ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
@@ -285,12 +296,11 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         int count = stack.getCount();
 
         if("ducktech:speed_upgrade".equals(id)){
-            MOD_SPEED=1;
             double plier = 1.0;
-			if(count>30){
+            if(count>30){
                 plier=0.3-((count-30)*0.0075);
-				return plier;
-			}
+                return plier;
+            }
             switch (count){
                 case 1:plier=0.9;break;
                 case 2:plier=0.825;break;
@@ -322,11 +332,9 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
                 case 28:plier=0.31;break;
                 case 29:plier=0.305;break;
                 case 30:plier=0.3;break;
-				default: return 1.0;
+                default: return 1.0;
             }
             return plier;
-        }else {
-            MOD_SPEED=2;
         }
 
         double perItem;
@@ -344,24 +352,9 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         return multiplier;
     }
 
-    private byte getStackMultiplier() {
+    private boolean hasStackUpgrade() {
         ItemStack stack = itemHandler.getStackInSlot(SLOT_RESERVED);
-        if (stack.isEmpty()) MOD_STACK=0;
-        if (stack.isEmpty() || !isStackUpgrade(stack)) return 0;
-
-        ResourceLocation rl = ForgeRegistries.ITEMS.getKey(stack.getItem());
-        if (rl == null) return 0;
-        String id = rl.toString();
-		if("exura:upgrade_stack".equals(id)) {
-            MOD_STACK=2;
-            return 1;
-        }
-		if("ducktech:stack_upgrade".equals(id)) {
-            MOD_STACK=1;
-            return 2;
-        }
-
-        return 0;
+        return !stack.isEmpty() && isStackUpgrade(stack);
     }
 
     private double getExtractInterval() {
@@ -370,10 +363,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
 
     private void tryExtractOneToCache() {
         List<ItemStack> filters = getFilterItems();
-		boolean stackUpgrade = false;
-		if(getStackMultiplier()==1||getStackMultiplier()==2){
-			stackUpgrade = true;
-		}
+        boolean stackUpgrade = hasStackUpgrade();
 
         for (Direction dir : DIRECTION_ORDER) {
             if (!isDirectionEnabled(dir)) continue;
@@ -482,10 +472,10 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
     }
 
     @Override
-	public void onLoad() {
-		super.onLoad();
-		lazyHandler = LazyOptional.of(() -> new SingleSlotItemHandler(itemHandler, SLOT_CACHE));
-	}
+    public void onLoad() {
+        super.onLoad();
+        lazyHandler = LazyOptional.of(() -> new SingleSlotItemHandler(itemHandler, SLOT_CACHE));
+    }
 
     @Override
     protected void saveAdditional(CompoundTag tag) {

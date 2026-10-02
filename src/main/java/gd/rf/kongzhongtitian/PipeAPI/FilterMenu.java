@@ -74,7 +74,14 @@ public class FilterMenu extends AbstractContainerMenu {
 
     @Override
     public boolean stillValid(Player player) {
-        return true; // 可进一步检查玩家是否持有该升级
+        // 玩家主手/副手仍持有该过滤器物品时菜单才保持打开（#10）
+        return isHoldingFilter(player.getMainHandItem())
+                || isHoldingFilter(player.getOffhandItem());
+    }
+
+    private boolean isHoldingFilter(ItemStack stack) {
+        return stack.getItem() instanceof NodeUpgradeItemFilter
+                && ItemStack.isSameItemSameTags(stack, upgradeStack);
     }
 
     @Override
