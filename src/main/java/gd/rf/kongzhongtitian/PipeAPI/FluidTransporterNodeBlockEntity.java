@@ -372,11 +372,9 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
                 probe.setAmount(1);
                 if (h.fill(probe, IFluidHandler.FluidAction.SIMULATE) > 0) return true;
             }
-            for (int tank = 0; tank < h.getTanks(); tank++) {
-                if (h.getTankCapacity(tank) > h.getFluidInTank(tank).getAmount()) {
-                    return true;
-                }
-            }
+            // 修复 #5：不再仅凭“存在空槽”判定可填充。
+            // 空槽必须能接受本节点待传输的流体类型（由上方 SIMULATE fill 校验），
+            // 否则会把只接受其他流体类型的空容器误判为目标，导致 fill 失败、传输中断。
             return false;
         } catch (Exception e) {
             return false;
