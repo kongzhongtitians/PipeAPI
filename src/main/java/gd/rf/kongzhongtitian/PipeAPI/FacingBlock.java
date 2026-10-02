@@ -16,7 +16,9 @@ public class FacingBlock extends HorizontalDirectionalBlock {
     public FacingBlock(Properties p_49795_) {
         super(p_49795_);
 
-        this.defaultBlockState().setValue(FACING, Direction.NORTH);
+        // 显式注册默认朝向为 NORTH（HorizontalDirectionalBlock 的默认值，
+        // 覆盖父类构造器中已注册的默认状态）
+        this.registerDefaultState(this.defaultBlockState().setValue(FACING, Direction.NORTH));
 
     }
 

@@ -204,10 +204,17 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
             fluidTank.drain(filled, IFluidHandler.FluidAction.EXECUTE);
         }
 
-        if (fluidTank.getFluidAmount() <= 0 || filled <= 0) {
+        if (filled <= 0 || fluidTank.getFluidAmount() <= 0) {
+            // 目标拒收或已全部送出：结束本次传输
             isTransitActive = false;
             currentTarget = null;
             currentTargetFace = null;
+        } else {
+            // 只送出一部分：重置并立即尝试下一个目标，避免死磕同一目标
+            isTransitActive = false;
+            currentTarget = null;
+            currentTargetFace = null;
+            tryStartTransit();
         }
     }
 
