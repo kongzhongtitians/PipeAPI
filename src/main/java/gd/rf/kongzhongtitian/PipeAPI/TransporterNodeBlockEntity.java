@@ -4,6 +4,9 @@ import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.game.ClientGamePacketListener;
+import net.minecraft.network.protocol.game.ClientboundBlockEntityDataPacket;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.Containers;
 import net.minecraft.world.MenuProvider;
@@ -56,6 +59,7 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         @Override
         protected void onContentsChanged(int slot) {
             setChanged();
+            syncToClient();
         }
     };
     
@@ -511,6 +515,23 @@ public class TransporterNodeBlockEntity extends BlockEntity implements MenuProvi
         }
         currentRemainingTicks = tag.getDouble("currentRemainingTicks");
         extractCooldown = tag.contains("extractCooldown") ? tag.getDouble("extractCooldown") : 10.0;
+    }
+
+    private void syncToClient() {
+        if (level != null && !level.isClientSide) {
+            level.sendBlockUpdated(worldPosition, getBlockState(), getBlockState(), 3);
+        }
+    }
+
+    @Override
+    public CompoundTag getUpdateTag() {
+        return saveWithoutMetadata();
+    }
+
+    @Nullable
+    @Override
+    public Packet<ClientGamePacketListener> getUpdatePacket() {
+        return ClientboundBlockEntityDataPacket.create(this);
     }
 
     @Override

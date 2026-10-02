@@ -12,7 +12,7 @@ import net.minecraftforge.items.SlotItemHandler;
 
 public class TransporterNodeMenu extends AbstractContainerMenu {
     private final ContainerLevelAccess access;
-    private static TransporterNodeBlockEntity blockEntity;
+    private final TransporterNodeBlockEntity blockEntity;
 
     // ===== 槽位坐标（供 Menu 与 Screen 共用，避免不一致）=====
     public static final int CACHE_X = 80,  CACHE_Y = 20;
