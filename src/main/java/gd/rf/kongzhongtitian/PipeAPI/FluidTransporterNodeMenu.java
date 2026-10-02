@@ -7,6 +7,7 @@ import net.minecraft.world.inventory.ContainerLevelAccess;
 import net.minecraft.world.inventory.Slot;
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandler;
+import net.minecraftforge.items.ItemStackHandler;
 import net.minecraftforge.items.SlotItemHandler;
 
 public class FluidTransporterNodeMenu extends AbstractContainerMenu {
@@ -25,8 +26,13 @@ public class FluidTransporterNodeMenu extends AbstractContainerMenu {
         this.blockEntity = blockEntity;
 
         // ===== 升级槽位（放在 GUI 右上角） =====
+        // 修复 A：blockEntity 可能为 null（DTMenu 注册处未提供 fallback），
+        // 此时使用临时 handler 兜底，避免 NPE
+        IItemHandler upgradeHandler = blockEntity != null
+                ? blockEntity.getUpgradeHandler()
+                : new ItemStackHandler(FluidTransporterNodeBlockEntity.UPGRADE_SLOTS);
         this.addSlot(new SpeedUpgradeSlot(
-                blockEntity.getUpgradeHandler(),
+                upgradeHandler,
                 FluidTransporterNodeBlockEntity.SLOT_SPEED,
                 134, 20));
 

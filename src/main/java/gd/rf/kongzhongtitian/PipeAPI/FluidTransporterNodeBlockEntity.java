@@ -22,6 +22,7 @@ import net.minecraftforge.common.capabilities.Capability;
 import net.minecraftforge.common.capabilities.ForgeCapabilities;
 import net.minecraftforge.common.util.LazyOptional;
 import net.minecraftforge.fluids.FluidStack;
+import net.minecraftforge.fluids.FluidUtil;
 import net.minecraftforge.fluids.capability.IFluidHandler;
 import net.minecraftforge.fluids.capability.templates.FluidTank;
 import net.minecraftforge.items.ItemStackHandler;
@@ -422,6 +423,23 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
                 Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, stack);
                 upgradeHandler.setStackInSlot(i, ItemStack.EMPTY);
             }
+        }
+        // 修复 #17：流体不再凭空消失，按整桶（1000 mB）转成对应流体桶掉落
+        FluidStack fluid = fluidTank.getFluid();
+        int fullBuckets = fluid.getAmount() / 1000;
+        if (!fluid.isEmpty() && fullBuckets > 0) {
+            FluidStack bucketFluid = fluid.copy();
+            bucketFluid.setAmount(1000);
+            for (int i = 0; i < fullBuckets; i++) {
+                ItemStack bucket = FluidUtil.getFilledBucket(bucketFluid);
+                if (bucket.isEmpty()) {
+                    // 该流体没有对应的桶形态，放弃剩余部分
+                    break;
+                }
+                Containers.dropItemStack(level, pos.getX() + 0.5, pos.getY() + 0.5, pos.getZ() + 0.5, bucket);
+            }
+            // 清空储罐
+            fluidTank.drain(fluid.getAmount(), IFluidHandler.FluidAction.EXECUTE);
         }
     }
 

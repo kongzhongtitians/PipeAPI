@@ -23,7 +23,11 @@ public class DTBlocks {
                     .strength(5.0F, 6.0F)
                     .requiresCorrectToolForDrops();
 
-    public static final RegistryObject<Block> VOID_HOPPER = registerBlock("void_hopper", () -> new VoidHopper(BlockBehaviour.Properties.of()));
+    // 修复 G：虚空漏斗补充强度与材质（此前空属性，默认 0.5 硬度空手秒挖）
+    public static final RegistryObject<Block> VOID_HOPPER = registerBlock("void_hopper",
+            () -> new VoidHopper(BlockBehaviour.Properties.of()
+                    .strength(2.0F)
+                    .sound(SoundType.METAL)));
 
     public static final RegistryObject<Block> TRANSPORTER_NODE = registerBlock("transporter_node",
             TransporterNode::new);

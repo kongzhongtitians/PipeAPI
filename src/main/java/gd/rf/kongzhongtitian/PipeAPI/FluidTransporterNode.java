@@ -53,4 +53,16 @@ public class FluidTransporterNode extends Block implements EntityBlock {
         }
         return null;
     }
+
+    // 修复 #17：方块被破坏时掉落升级物品与流体桶（此前缺失，内容全部消失）
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof FluidTransporterNodeBlockEntity node) {
+                node.dropContents(level, pos);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
 }
