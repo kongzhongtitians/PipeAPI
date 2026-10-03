@@ -3,10 +3,10 @@ loaderVersion = "[47,)"
 license = "BSD-3-Clause-Clear"
 [[mods]]
 modId = "${mod_id}"
-version = "1.0.11"
-displayName = "PipeAPI"
+version = "1.0.12"
+displayName = "Pipe Utilities"
 authors = "The Duck Team"
-description = '''PipeAPI for Extra Utilies Reborn Again and DuckTech'''
+description = '''Pipe Utilities for Extra Utilies Reborn Again and DuckTech'''
 [[dependencies."${mod_id}"]]
 modId = "forge"
 mandatory = true
