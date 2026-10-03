@@ -147,8 +147,12 @@ public class FluidTransporterNodeBlockEntity extends BlockEntity implements Menu
             node.extractCooldown += node.getExtractInterval();
             node.refreshNetwork();
             node.tryExtractFluidToTank();
+            // 修复 E：tryStartTransit 仅在抽取节奏归零时尝试，与物品节点对齐。
+            // 原无条件每 tick 调用导致距离 0（相邻容器）时 currentRemainingTicks=0，
+            // 每 tick 都 fill 一次、无传输间隔。失效目标轮换由 processTransit 内
+            // switchToNextTarget() 立即触发，不依赖此处。
+            node.tryStartTransit();
         }
-        node.tryStartTransit();
     }
 
     /* ==================== 传输逻辑 ==================== */

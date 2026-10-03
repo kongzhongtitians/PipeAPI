@@ -70,8 +70,10 @@ public class NodeUpgradeItemFilter extends Item {
                     return new FilterMenu(id, inv, player.getItemInHand(hand));
                 }
             };
-            // 使用 NetworkHooks.openScreen 替代 serverPlayer.openMenu
-            NetworkHooks.openScreen(serverPlayer, menuProvider, buf -> buf.writeInt(hand.ordinal()));
+            // 修复 B：与客户端 DTMenu 中的 data.readEnum(InteractionHand.class) 协议配对。
+            // 原 writeInt(hand.ordinal()) 写 4 字节大端 int，readEnum 读 VarInt，
+            // 副手(ordinal=1)时首字节为 0x00 会被误判为 MAIN_HAND，取错手中物品。
+            NetworkHooks.openScreen(serverPlayer, menuProvider, buf -> buf.writeEnum(hand));
         }
         return InteractionResultHolder.sidedSuccess(stack, level.isClientSide);
     }
