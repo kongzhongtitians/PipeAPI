@@ -12,7 +12,7 @@ import org.slf4j.Logger;
 public class PipeAPI {
 
     // Define mod id in a common place for everything to reference
-    public static final String MODID = "pipe_api";
+    public static final String MODID = "pipe_utilities";
     // Directly reference a slf4j logger
     private static final Logger LOGGER = LogUtils.getLogger();
 
