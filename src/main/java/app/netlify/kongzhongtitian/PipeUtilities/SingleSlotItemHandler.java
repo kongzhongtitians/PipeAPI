@@ -1,4 +1,4 @@
-package gd.rf.kongzhongtitian.PipeAPI;
+package app.netlify.kongzhongtitian.PipeUtilities;
 
 import net.minecraft.world.item.ItemStack;
 import net.minecraftforge.items.IItemHandlerModifiable;

@@ -1,4 +1,4 @@
-package gd.rf.kongzhongtitian.PipeAPI;
+package app.netlify.kongzhongtitian.PipeUtilities;
 
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerPlayer;
@@ -18,8 +18,8 @@ import net.minecraftforge.network.NetworkHooks;
 
 import javax.annotation.Nullable;
 
-public class TransporterNode extends Block implements EntityBlock {
-    public TransporterNode() {
+public class FluidTransporterNode extends Block implements EntityBlock {
+    public FluidTransporterNode() {
         super(Properties.of()
                 .strength(2.0F)
                 .sound(SoundType.METAL)
@@ -29,14 +29,14 @@ public class TransporterNode extends Block implements EntityBlock {
     @Nullable
     @Override
     public BlockEntity newBlockEntity(BlockPos pos, BlockState state) {
-        return new TransporterNodeBlockEntity(pos, state);
+        return new FluidTransporterNodeBlockEntity(pos, state);
     }
 
     @Override
     public InteractionResult use(BlockState state, Level level, BlockPos pos, Player player, InteractionHand hand, BlockHitResult hit) {
         if (!level.isClientSide) {
             BlockEntity be = level.getBlockEntity(pos);
-            if (be instanceof TransporterNodeBlockEntity node) {
+            if (be instanceof FluidTransporterNodeBlockEntity node) {
                 NetworkHooks.openScreen((ServerPlayer) player, node, pos);
             }
         }
@@ -46,23 +46,23 @@ public class TransporterNode extends Block implements EntityBlock {
     @Nullable
     @Override
     public <T extends BlockEntity> BlockEntityTicker<T> getTicker(Level level, BlockState state, BlockEntityType<T> type) {
-        if (type == DTBlockEntity.TRANSPORTER_NODE.get()) {
+        if (type == DTBlockEntity.FLUID_TRANSPORTER_NODE.get()) {
             return (level1, pos1, state1, be) -> {
-                TransporterNodeBlockEntity.tick(level1, pos1, state1, (TransporterNodeBlockEntity) be);
+                FluidTransporterNodeBlockEntity.tick(level1, pos1, state1, (FluidTransporterNodeBlockEntity) be);
             };
         }
         return null;
     }
 
-	@Override
-	public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
-		if (!state.is(newState.getBlock())) {
-			BlockEntity blockEntity = level.getBlockEntity(pos);
-			if (blockEntity instanceof TransporterNodeBlockEntity node) {
-				node.dropContents(level, pos);
-			}
-			level.updateNeighbourForOutputSignal(pos, this);
-			super.onRemove(state, level, pos, newState, isMoving);
-		}
-	}
+    // 修复 #17：方块被破坏时掉落升级物品与流体桶（此前缺失，内容全部消失）
+    @Override
+    public void onRemove(BlockState state, Level level, BlockPos pos, BlockState newState, boolean isMoving) {
+        if (!state.is(newState.getBlock())) {
+            BlockEntity blockEntity = level.getBlockEntity(pos);
+            if (blockEntity instanceof FluidTransporterNodeBlockEntity node) {
+                node.dropContents(level, pos);
+            }
+            super.onRemove(state, level, pos, newState, isMoving);
+        }
+    }
 }

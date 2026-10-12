@@ -1,4 +1,4 @@
-package gd.rf.kongzhongtitian.PipeAPI;
+package app.netlify.kongzhongtitian.PipeUtilities;
 
 import net.minecraft.client.gui.screens.MenuScreens;
 import net.minecraftforge.api.distmarker.Dist;

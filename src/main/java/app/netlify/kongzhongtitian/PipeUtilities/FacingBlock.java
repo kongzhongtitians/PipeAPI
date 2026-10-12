@@ -1,4 +1,4 @@
-package gd.rf.kongzhongtitian.PipeAPI;
+package app.netlify.kongzhongtitian.PipeUtilities;
 
 import net.minecraft.core.Direction;
 import net.minecraft.world.item.context.BlockPlaceContext;
